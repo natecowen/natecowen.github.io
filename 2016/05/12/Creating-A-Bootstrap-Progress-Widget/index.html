@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-Head tag --> 
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon/favicon.ico">
+
+    <title>Blog Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link rel="stylesheet" href="/css/ie10-viewport-bug-workaround.css">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/css/blog.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+	<!-- Menu -->
+	<div class="blog-masthead">
+    <div class="container">
+        <nav class="blog-nav">
+            
+                <a class="blog-nav-item" href="/">Home</a>
+            
+                <a class="blog-nav-item" href="/Resume">Resume</a>
+            
+                <a class="blog-nav-item" href="/archives">Archives</a>
+            
+        </nav>
+    </div>
+</div>
+	
+		<!-- Blog Header: title and subtitle -->
+        <div class="blog-header">
+	<div class="container">
+    	<h1 class="blog-title">Nate Cowen</h1>
+    	<p class="lead blog-description">Web Marketing Specialist and Software Developer</p>
+	</div>
+</div>
+	<div class="container">
+
+        
+        <div class="row">
+
+            <!-- Main Content -->
+            <div class="col-sm-8 blog-main">
+                <div class="blog-post">
+
+    <!-- Title -->
+    <h2 class="blog-post-title">
+        <a href="/2016/05/12/Creating-A-Bootstrap-Progress-Widget/">
+            Creating A Bootstrap Progress Widget
+        </a>
+    </h2>
+
+    <!-- Date and Author -->
+    <p class="blog-post-meta">
+        2016-05-12
+        
+            by Nate Cowen
+        
+    </p>
+
+    <!-- Content -->
+    <p>If you haven’t figured out already, this site is going to be used for several purposes. First, it’s going to be the new home of my portfolio site and blog. Second, it’s a testing ground for developing and improving my technical skillset. I hope to solidify my understanding of current technologies and programming concepts through blog posts like this one.</p>
+<p>In order to stay on track and continue improving, I want to be able to track my progress. I decided to create a progress bar widget for this purpose. This widget can be seen in the side bar with the title, <em>“Currently Working On.”</em>  <a id="more"></a>I stole this idea from one of my favorite authors, Brandon Sanderson. <a href="http://brandonsanderson.com/" target="_blank" rel="external">On his website</a>, he has a progress bar that tracks where he is at in his writing. I liked this idea and decided to replicate it on my own website.</p>
+<hr>
+<h2 id="Starting-to-Code"><a href="#Starting-to-Code" class="headerlink" title="Starting to Code"></a>Starting to Code</h2><p>My Hexo template is based off the blog <a href="http://www.codeblocq.com/2016/03/Create-an-Hexo-Theme-Part-1-Index/" target="_blank" rel="external"><em>Create A Hexo Theme</em></a> on CodeBlocq.com. This tutorial provided a great foundation on static site generators; I highly recommend reading it. After running through this tutorial, I was able to start creating my progress bar widget. </p>
+<p>The first file that needed to edit was the _config.yml file located within the root folder of my theme. This file contains repetitive data that is used in multiple locations of the website. This includes items like site title, site, description, and widgets.  I adding the lines “learning:”, “-topic:”, and “percent:” within the “widgets:” section of my config.yml file. See the code below: </p>
+<pre>
+sidebar: right
+widgets:
+    about: Hi, I'm Nate. I create code. I work mainly in front-end, but I'm developing my full-stack skillset. <br><br>I'm fascinated by data science, programming, and tech in general.
+    tags: true
+    skills: HTML, CSS, Design, Development, Web Marketing, Digital Concept Creation, Junior Level Programming (C#, VBA, PHP, AS3)
+    learning: 
+
+        - topic: Static Site Generators (Hexo)
+          percent: 35%
+
+        - topic: Bootstrap
+          percent: 25%
+
+        - topic: Node.js
+          percent: 15%
+
+        - topic: Advanced Programming Concepts and Terminology
+          percent: 20%
+
+        - topic: Git/Version Control
+          percent: 65%
+
+        - topic: Unit Testing
+          percent: 1 %  
+
+
+</pre>
+
+<p>The code above is used to populate the content for the “currently working on” section. The next step is to create the logic that is responsible for loading the content into the widget. I created a blank file with the name “learning.ejs” within my theme’s layout folder. The specific path in my case was <em>/layout/_partial/widget/</em>.</p>
+<p>I began by testing a bit of hardcoded HTML within the “learning.ejs” file. <code>&lt;span&gt;This is some test content&lt;/span&gt;</code>. With Hexo server running, I refreshed the page and verified that my test content had populated the widget. Success! </p>
+<p>With the widget loading test content, I began to work on parsing out the data from my config.yml file. The final code I wrote can be seen below. It uses a combination of Bootstrap objects, EJS (Javascript Templates), and CSS from the CodeBlocq.com tutorial.</p>
+<hr>
+<h3 id="Building-the-Logic"><a href="#Building-the-Logic" class="headerlink" title="Building the Logic"></a>Building the Logic</h3><pre>
+&lt;% if(theme.widgets.learning){ %&gt;
+    &lt;div class="sidebar-module sidebar-module-inset"&gt;
+        &lt;h4&gt;Currently Working On &lt;h4&gt;
+
+        &lt;% for(var i=0; i&lt;theme.widgets.learning.length; i++) { %&gt;
+            &lt;span&gt;&lt;%= theme.widgets.learning[i].topic %&gt;&lt;/span&gt;
+
+               &lt;div class="progress "&gt;
+                  &lt;div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: &lt;%= theme.widgets.learning[i].percent %&gt;;"&gt;
+
+                  &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;% } %>
+
+    &lt;/div&gt;
+&lt;% } %&gt;
+
+</pre>
+
+<p>That’s a lot to digest, so let me break it down into bite sized pieces. The first line of code uses EJS to check if theme.widgets.learning exist.<br> <code>&lt;% if(theme.widgets.learning){ %&gt;</code>  Essentially, it is looking for the nested “learning” code that was placed under the “widgets” section of the config.yml file. If it returns true, the program moves to the next line. </p>
+<p>Next, a div with the classes of “sidebar-module” and “sidebar-module-insert” is inserted. The div classes are part of the theme CSS from codeblocq.com. The classes provide styling to the widget box section. This particular CSS file is located within the *themefolder/source/css/blog.css.</p>
+<p>Next, I used EJS to create a for loop. This for loop counts the number of items within the widgets/learning section of the config.yml file. It then prints the name of the topic using the following code. <br> <code>&lt;p&gt;&lt;%= theme.widgets.learning[i].topic %&gt;&lt;/p&gt;</code></p>
+<p>Finally, the progress bar width is set to the percent located within the widgets section of the config.yml code. The progress bar is a feature of bootstrap. <a href="http://getbootstrap.com/components/#progress" target="_blank" rel="external">You can learn more about it here</a>. The code used to set the progress bar can be seen below. <br> <code> style=”width: &lt;%= theme.widgets.learning[i].percent %&gt;;”&gt;</code> </p>
+<hr>
+<h3 id="The-End"><a href="#The-End" class="headerlink" title="The End"></a>The End</h3><p>That’s the end of this tutorial. I learned a lot about static site generators, Bootstrap, and Javascript templating through this process. I hope you have too. </p>
+
+
+    <hr />
+
+    <!-- Tags and Categories links -->
+    
+    
+
+</div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                
+    
+    <div class="sidebar-module sidebar-module-inset">
+        <h4>About</h4>
+        <p>Hi, I'm Nate. I create code. I work mainly in front-end, but I'm developing my full-stack skillset. <br/><br/>I'm fascinated by data science, programming, and tech in general.</p>
+    </div>
+
+
+    
+
+    
+    <div class="sidebar-module sidebar-module-inset">
+        <h4>Expert Skillset</h4>
+        <p>HTML, CSS, Design, Development, Web Marketing, Digital Concept Creation, Junior Level Programming (C#, VBA, PHP, AS3)</p>
+    </div>
+
+
+    
+    <div class="sidebar-module sidebar-module-inset">
+        <h4>Currently Working On</h4>
+            
+        
+            <span>Static Site Generators (Hexo)</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 35%;">
+
+  				</div>
+			</div>
+    	
+            <span>Bootstrap</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
+
+  				</div>
+			</div>
+    	
+            <span>Node.js</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 15%;">
+
+  				</div>
+			</div>
+    	
+            <span>Advanced Programming Concepts and Terminology</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
+
+  				</div>
+			</div>
+    	
+            <span>Git/Version Control</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 65%;">
+
+  				</div>
+			</div>
+    	
+            <span>Unit Testing</span>
+        
+       		<div class="progress ">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 1 %;">
+
+  				</div>
+			</div>
+    	
+        
+    </div>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+	
+	
+	<!-- After footer scripts --> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+</body>
+
+</html>
